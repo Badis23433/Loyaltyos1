@@ -429,7 +429,7 @@ async function useReward(rid,pts,name){
   const newPts=c.points-pts;const newTier=newPts>=5000?'Platinum':newPts>=1000?'Gold':'Silver';
   await sb.from('clients').update({points:newPts,tier:newTier}).eq('id',cid);
   await sb.from('transactions').insert({client_id:cid,merchant_id:c.merchant_id,type:'redeem',points:pts,description:`Récompense : ${name}`});
-  await sb.from('rewards').update({usage_count:pts}).eq('id',rid);
+  await sb.from('rewards').update({ usage_count: (r.usage_count || 0) + 1 }).eq('id', rid);
   toast(`"${name}" utilisée ! −${pts} pts`,'ok');
   await loginAs(cid);
 }
