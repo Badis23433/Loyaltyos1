@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoyaltyOS — Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Reset de base pour éviter les décalages */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0D0D0F;
+            --bg2: #161618;
+            --txt: #F0F0EE;
+            --txt2: #9A9A98;
+            --accent: #6C63FF;
+            --border: rgba(255,255,255,0.12);
+            --r: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px; /* Évite que ça touche les bords sur mobile */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span { 
+            color: var(--accent); 
+        }
+
+        .sub {
+            color: var(--txt2);
+            font-size: 15px;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: var(--bg);
+            color: var(--txt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.25s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .btn-admin {
+            margin-top: 8px;
+            background: transparent;
+            border-color: transparent;
+            color: var(--txt2);
+            font-size: 13px;
+        }
+
+        .btn-admin:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--txt);
+            border-color: var(--border);
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">loyalty<span>OS</span></div>
+        <p class="sub">Sélectionnez votre portail de connexion</p>
+        
+        <div class="card">
+            <a href="client.html" class="btn">Espace Client</a>
+            <a href="merchant.html" class="btn">Espace Commerçant</a>
+            <a href="admin.html" class="btn btn-admin">Accès Administrateur</a>
+        </div>
+    </div>
+</body>
+</html>
