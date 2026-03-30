@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LoyaltyOS — Ma carte fidélité</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#1A56E8;--accent-bg:#EBF0FD;--accent-txt:#1A3A9E;
+  --gold:#C9933A;--gold-bg:#FDF3E3;--gold-txt:#8B6420;
+  --green:#1A6B35;--green-bg:#E8F5EC;
+  --red:#9B2121;--red-bg:#FDECEC;
+  --bg:#ffffff;--bg2:#F7F7F5;--bg3:#EFEFED;
+  --txt:#1A1A18;--txt2:#6B6B68;--txt3:#A0A09D;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --r:16px;--rm:10px;
+}
+@media(prefers-color-scheme:dark){:root{--bg:#18181A;--bg2:#222224;--bg3:#2A2A2C;--txt:#F0F0EE;--txt2:#9A9A98;--txt3:#606060;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--accent-bg:#1A2A4A;--accent-txt:#7EB3FF;--gold-bg:#2A1F08;--gold-txt:#E8B96A;--green-bg:#0D2218;--red-bg:#2A0D0D}}
+html,body{min-height:100%;font-family:'Inter',sans-serif;color:var(--txt);background:var(--bg3)}
+/* AUTH */
+#auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+#auth.h{display:none}
+.abox{background:var(--bg);border:0.5px solid var(--border2);border-radius:20px;padding:2rem;width:100%;max-width:360px}
+.alogo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;text-align:center;margin-bottom:6px}.alogo span{color:var(--accent)}
+.asub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:1.5rem}
+.atabs{display:flex;background:var(--bg2);border-radius:var(--rm);padding:3px;margin-bottom:1.25rem}
+.atab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500;color:var(--txt2);border:none;background:transparent;font-family:'Inter',sans-serif}
+.atab.on{background:var(--bg);color:var(--txt)}
+.aerr{background:var(--red-bg);color:var(--red);font-size:12px;padding:8px 12px;border-radius:var(--rm);margin-bottom:10px;display:none}
+.asuc{background:var(--green-bg);color:var(--green);font-size:12px;padding:8px 12px;border-radius:var(--rm);margin-bottom:10px;display:none}
+.albl{font-size:11px;color:var(--txt2);display:block;margin-bottom:4px}
+.ainp{width:100%;padding:11px 12px;border:0.5px solid var(--border2);border-radius:var(--rm);font-size:14px;background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;outline:none;margin-bottom:10px}
+.ainp:focus{border-color:var(--accent)}
+.abtn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--rm);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.abtn:hover{opacity:.9}
+.ahint{font-size:11px;color:var(--txt3);text-align:center;margin-top:12px}
+/* APP */
+#app{min-height:100vh;display:flex;flex-direction:column}
+#app.h{display:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
+.tlogo{font-family:'Syne',sans-serif;font-size:15px;font-weight:800}.tlogo span{color:var(--accent)}
+.tbright{display:flex;align-items:center;gap:8px}
+.tbname{font-size:12px;font-weight:500;color:var(--txt2)}
+.lbtn{padding:5px 10px;border:0.5px solid var(--border);border-radius:var(--rm);font-size:11px;cursor:pointer;background:none;color:var(--txt2);font-family:'Inter',sans-serif}
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:0.5px solid var(--border);display:flex;padding:.5rem 0 calc(.5rem + env(safe-area-inset-bottom));z-index:100}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:.5rem;border:none;background:none}
+.bni svg{width:22px;height:22px;stroke:var(--txt3);stroke-width:1.5;fill:none}
+.bni.on svg{stroke:var(--accent)}
+.bni span{font-size:9px;color:var(--txt3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.bni.on span{color:var(--accent)}
+/* MAIN */
+.main{flex:1;padding:1.25rem;padding-bottom:calc(5rem + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;width:100%}
+.panel{display:none}.panel.on{display:block}
+/* LOYALTY CARD */
+.lcard{border-radius:20px;padding:1.5rem;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;margin-bottom:1.25rem;position:relative;overflow:hidden;cursor:pointer;transition:transform .15s}
+.lcard:hover{transform:scale(1.01)}
+.lcard::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+.lcard-top{display:flex;justify-content:space-between;align-items:flex-start}
+.lcard-brand{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;opacity:.9}
+.lcard-tier{font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.2);font-weight:700;letter-spacing:.08em}
+.lcard-pts{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;line-height:1}
+.lcard-sub{font-size:11px;opacity:.7;margin-top:4px}
+.lcard-bar{width:50px;height:3px;border-radius:2px;background:rgba(255,255,255,.3);margin-top:12px}
+.lcard-name{font-size:13px;opacity:.8;margin-top:6px}
+/* PROGRESS */
+.prog-wrap{background:var(--bg);border-radius:var(--r);padding:1.25rem;margin-bottom:1.25rem;border:0.5px solid var(--border)}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prog-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+.prog-next{font-size:12px;color:var(--accent);font-weight:500}
+.prog-bar-bg{height:8px;background:var(--bg3);border-radius:20px;overflow:hidden;margin-bottom:6px}
+.prog-bar-fill{height:100%;border-radius:20px;background:var(--accent);transition:width .8s ease}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rm);padding:.875rem;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;line-height:1}
+.stat-lbl{font-size:11px;color:var(--txt2);margin-top:4px}
+/* SECTION TITLE */
+.st{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:.875rem}
+/* REWARDS */
+.rwgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem}
+.rwcard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;cursor:pointer;transition:transform .15s}
+.rwcard:hover:not(.locked){transform:translateY(-2px)}
+.rwcard.locked{opacity:.5;cursor:not-allowed}
+.rwcard.locked::after{content:'Verrouillé';display:block;font-size:10px;color:var(--txt3);margin-top:4px}
+.rwe{font-size:32px;margin-bottom:6px}
+.rwn{font-size:12px;font-weight:600;margin-bottom:4px}
+.rwp{font-size:12px;color:var(--gold);font-weight:600}
+.rwu{font-size:10px;color:var(--txt3)}
+/* HISTORY */
+.hrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.hrow:last-child{border-bottom:none}
+.hic{width:34px;height:34px;border-radius:var(--rm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.hearn{background:var(--green-bg);color:var(--green)}
+.hredeem{background:var(--red-bg);color:var(--red)}
+.hbonus{background:var(--gold-bg);color:var(--gold-txt)}
+.hinfo{flex:1;min-width:0}
+.hdesc{font-size:13px;font-weight:500}
+.hdate{font-size:11px;color:var(--txt3);margin-top:1px}
+.hpts{font-size:13px;font-weight:600;flex-shrink:0}
+/* NOTIFS */
+.ncard{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rm);padding:1rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.nicon{width:36px;height:36px;border-radius:var(--rm);background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ntitle{font-size:13px;font-weight:600;margin-bottom:3px}
+.nbody{font-size:12px;color:var(--txt2);line-height:1.4}
+.ndate{font-size:10px;color:var(--txt3);margin-top:4px}
+.nunread{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px}
+/* PROFILE */
+.profile-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem}
+.pav{width:56px;height:56px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-txt);flex-shrink:0;font-family:'Syne',sans-serif}
+.pname{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.ptier{display:inline-flex;align-items:center;gap:5px;background:var(--gold-bg);color:var(--gold-txt);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;margin-top:4px}
+/* WALLET BTNS */
+.wallet-btns{display:flex;flex-direction:column;gap:8px;margin-top:1rem}
+.wbtn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--rm);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;width:100%;transition:opacity .15s}
+.wbtn:hover{opacity:.9}
+.wbtn-apple{background:#000;color:#fff}
+.wbtn-samsung{background:#1428A0;color:#fff}
+.wbtn-google{background:#fff;color:#333;border:0.5px solid var(--border2)}
+.wbtn-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+/* EMPTY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--txt2)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.empty-sub{font-size:13px;line-height:1.6}
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fl{font-size:11px;color:var(--txt2)}
+.fi{padding:11px 12px;border:0.5px solid var(--border2);border-radius:var(--rm);font-size:14px;background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;outline:none;width:100%}
+.fi:focus{border-color:var(--accent)}
+.sbtn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--rm);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--txt);color:var(--bg);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--green);color:#fff}
+.toast.err{background:var(--red);color:#fff}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="auth">
+  <div class="abox">
+    <div class="alogo">loyalty<span>OS</span></div>
+    <div class="asub">Votre espace fidélité</div>
+    <div class="atabs">
+      <button class="atab on" onclick="am('login')">Connexion</button>
+      <button class="atab" onclick="am('register')">Inscription</button>
+    </div>
+    <div class="aerr" id="aerr"></div>
+    <div class="asuc" id="asuc"></div>
+    <div id="reg-extra" style="display:none">
+      <label class="albl">Votre nom complet *</label>
+      <input class="ainp" id="r-name" placeholder="Sophie Cardin">
+      <label class="albl">Téléphone</label>
+      <input class="ainp" id="r-phone" placeholder="+33 6 00 00 00 00">
+      <label class="albl">Code d'invitation commerçant</label>
+      <input class="ainp" id="r-code" placeholder="Laissez vide si inconnu">
+    </div>
+    <label class="albl">Email *</label>
+    <input class="ainp" id="a-email" type="email" placeholder="vous@exemple.fr" value="sophie@client.fr">
+    <label class="albl">Mot de passe *</label>
+    <input class="ainp" id="a-pass" type="password" placeholder="••••••••" value="client123" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="abtn" id="a-submit" onclick="doLogin()">Se connecter</button>
+    <div class="ahint">Démo : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2b1adb2aaaba782a1aeaba7acb6eca4b0">[email&#160;protected]</a> / client123</div>
+  </div>
+</div>
+
+<div id="app" class="h">
+  <div class="topbar">
+    <div class="tlogo">loyalty<span>OS</span></div>
+    <div class="tbright">
+      <span class="tbname" id="top-name"></span>
+      <button class="lbtn" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="main">
+
+    <!-- HOME / CARD -->
+    <div class="panel on" id="p-home">
+      <div class="lcard" id="loyalty-card" style="background:#1C1C1E;color:#fff">
+        <div class="lcard-top">
+          <div class="lcard-brand" id="lc-brand">—</div>
+          <div class="lcard-tier" id="lc-tier">SILVER</div>
+        </div>
+        <div>
+          <div class="lcard-pts" id="lc-pts">0</div>
+          <div class="lcard-sub">points disponibles</div>
+          <div class="lcard-bar"></div>
+          <div class="lcard-name" id="lc-name">—</div>
+        </div>
+      </div>
+
+      <div class="prog-wrap">
+        <div class="prog-header">
+          <div class="prog-title" id="prog-title">Progression vers Gold</div>
+          <div class="prog-next" id="prog-next">—</div>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="prog-labels"><span id="prog-from">—</span><span id="prog-to">—</span></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat"><div class="stat-val" id="s-visits">—</div><div class="stat-lbl">Visites</div></div>
+        <div class="stat"><div class="stat-val" id="s-pts">—</div><div class="stat-lbl">Points</div></div>
+        <div class="stat"><div class="stat-val" id="s-value">—</div><div class="stat-lbl">Valeur €</div></div>
+      </div>
+
+      <div class="st">Ajouter au téléphone</div>
+      <div class="wallet-btns">
+        <button class="wbtn wbtn-apple" onclick="addToWallet('apple')">
+          <div class="wbtn-icon">🍎</div><span>Ajouter à Apple Wallet</span>
+        </button>
+        <button class="wbtn wbtn-samsung" onclick="addToWallet('samsung')">
+          <div class="wbtn-icon">📱</div><span>Ajouter à Samsung Wallet</span>
+        </button>
+        <button class="wbtn wbtn-google" onclick="addToWallet('google')">
+          <div class="wbtn-icon">🎯</div><span style="color:#333">Ajouter à Google Wallet</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- REWARDS -->
+    <div class="panel" id="p-rewards">
+      <div class="st">Récompenses disponibles</div>
+      <div class="rwgrid" id="rw-grid"></div>
+      <div style="background:var(--bg);border-radius:var(--r);padding:1rem;border:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">Comment utiliser mes récompenses ?</div>
+        <div style="font-size:12px;color:var(--txt2);line-height:1.6">Présentez votre carte Wallet à la caisse — le commerçant valide la récompense et déduit les points automatiquement.</div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="panel" id="p-history">
+      <div class="st">Historique des transactions</div>
+      <div class="card" style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:1rem" id="hist-list"></div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="panel" id="p-notifs">
+      <div class="st">Mes notifications</div>
+      <div id="notifs-list"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="panel" id="p-profile">
+      <div class="profile-card">
+        <div class="pav" id="pav">—</div>
+        <div>
+          <div class="pname" id="p-fullname">—</div>
+          <div class="ptier" id="p-tier">★ Silver</div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:6px" id="p-since">Membre depuis —</div>
+        </div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--r);padding:1.25rem;border:0.5px solid var(--border);margin-bottom:1rem">
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:1rem">Modifier mes informations</div>
+        <div class="fg"><div class="fl">Nom complet</div><input class="fi" id="edit-name" placeholder="Votre nom"></div>
+        <div class="fg"><div class="fl">Email</div><input class="fi" id="edit-email" type="email" placeholder="Votre email"></div>
+        <div class="fg"><div class="fl">Téléphone</div><input class="fi" id="edit-phone" placeholder="+33 6 ..."></div>
+        <div class="fg"><div class="fl">Nouveau mot de passe (laisser vide pour ne pas changer)</div><input class="fi" id="edit-pass" type="password" placeholder="Nouveau mot de passe"></div>
+        <button class="sbtn" onclick="saveProfile()">Sauvegarder</button>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--r);padding:1.25rem;border:0.5px solid var(--border)">
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px">Mes wallets installés</div>
+        <div id="wallet-status" style="font-size:12px;color:var(--txt2)">Chargement...</div>
+        <div class="wallet-btns" style="margin-top:10px">
+          <button class="wbtn wbtn-apple" onclick="addToWallet('apple')"><div class="wbtn-icon">🍎</div><span>Apple Wallet</span></button>
+          <button class="wbtn wbtn-samsung" onclick="addToWallet('samsung')"><div class="wbtn-icon">📱</div><span>Samsung Wallet</span></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bnav">
+    <button class="bni on" onclick="sw('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span>Carte</span>
+    </button>
+    <button class="bni" onclick="sw('rewards')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span>Récompenses</span>
+    </button>
+    <button class="bni" onclick="sw('history')">
+      <svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      <span>Historique</span>
+    </button>
+    <button class="bni" onclick="sw('notifs')" id="bnav-notifs">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span>Notifications</span>
+    </button>
+    <button class="bni" onclick="sw('profile')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profil</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://qqcfmbpixdeiczobqnqa.supabase.co';
+const SB_KEY='sb_publishable_0OsZK_JGmbjWz8SAr05mwA_E1H0WRlF';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+let cid=null,clientData=null;
+
+function am(mode){
+  document.querySelectorAll('.atab').forEach((t,i)=>t.classList.toggle('on',['login','register'][i]===mode));
+  document.getElementById('reg-extra').style.display=mode==='register'?'block':'none';
+  document.getElementById('a-submit').textContent=mode==='register'?"M'inscrire":'Se connecter';
+  window._am=mode;
+  document.getElementById('aerr').style.display='none';
+  document.getElementById('asuc').style.display='none';
+}
+window._am='login';
+
+async function doLogin(){
+  const email=document.getElementById('a-email').value.trim();
+  const pass=document.getElementById('a-pass').value;
+  const err=document.getElementById('aerr');const suc=document.getElementById('asuc');
+  err.style.display='none';suc.style.display='none';
+  const btn=document.getElementById('a-submit');btn.disabled=true;
+  if(!email||!pass){err.textContent='Email et mot de passe obligatoires.';err.style.display='block';btn.disabled=false;return;}
+  try{
+    if(window._am==='register'){
+      const name=document.getElementById('r-name').value.trim();
+      const phone=document.getElementById('r-phone').value.trim();
+      const code=document.getElementById('r-code').value.trim();
+      if(!name){err.textContent='Votre nom est obligatoire.';err.style.display='block';btn.disabled=false;return;}
+      const{data:exist}=await sb.from('clients').select('id').eq('email',email).single();
+      if(exist){err.textContent='Cet email est déjà utilisé.';err.style.display='block';btn.disabled=false;return;}
+      let merchantId=null;
+      if(code){
+        const{data:m}=await sb.from('merchants').select('id').ilike('shop_name','%'+code+'%').single();
+        if(m)merchantId=m.id;
+      }
+      if(!merchantId){
+        const{data:merchants}=await sb.from('merchants').select('id').eq('active',true).limit(1);
+        if(merchants&&merchants.length>0)merchantId=merchants[0].id;
+      }
+      if(!merchantId){err.textContent='Aucun commerçant trouvé. Demandez le code à votre commerçant.';err.style.display='block';btn.disabled=false;return;}
+      const{data:c,error}=await sb.from('clients').insert({merchant_id:merchantId,name,email,pass,phone,points:0,tier:'Silver',wallet:[],visits:0}).select().single();
+      if(error){err.textContent='Erreur: '+error.message;err.style.display='block';btn.disabled=false;return;}
+      suc.textContent='Compte créé ! Connexion en cours...';suc.style.display='block';
+      setTimeout(()=>loginAs(c.id),800);
+    }else{
+      const{data:c,error}=await sb.from('clients').select('*').eq('email',email).eq('pass',pass).single();
+      if(error||!c){err.textContent='Email ou mot de passe incorrect.';err.style.display='block';btn.disabled=false;return;}
+      loginAs(c.id);
+    }
+  }catch(ex){err.textContent='Erreur de connexion.';err.style.display='block';}
+  btn.disabled=false;
+}
+
+async function loginAs(id){
+  cid=id;
+  const{data:c}=await sb.from('clients').select('*').eq('id',id).single();
+  if(!c){doLogout();return;}
+  clientData=c;
+  sessionStorage.setItem('los_client_sess',id);
+  document.getElementById('auth').classList.add('h');
+  document.getElementById('app').classList.remove('h');
+  document.getElementById('top-name').textContent=c.name.split(' ')[0];
+  renderAll();
+}
+function doLogout(){sessionStorage.removeItem('los_client_sess');location.reload();}
+
+async function getClient(){
+  const{data:c}=await sb.from('clients').select('*').eq('id',cid).single();
+  if(c)clientData=c;
+  return clientData;
+}
+async function getMerchant(){
+  const c=clientData;if(!c)return null;
+  const{data:m}=await sb.from('merchants').select('*').eq('id',c.merchant_id).single();
+  return m;
+}
+
+async function renderAll(){
+  await renderCard();
+  renderRewards();renderHistory();renderNotifs();renderProfile();
+}
+
+async function renderCard(){
+  const c=await getClient();const m=await getMerchant();
+  if(!c)return;
+  const tier=c.tier||'Silver';const pts=c.points||0;
+  const colors={Silver:'#1C1C1E',Gold:'#8B6420',Platinum:'#3D2A8A'};
+  const card=document.getElementById('loyalty-card');
+  card.style.background=m?.card_color||colors[tier]||'#1C1C1E';
+  document.getElementById('lc-brand').textContent=m?.shop_name||'Fidélité';
+  document.getElementById('lc-tier').textContent=tier.toUpperCase();
+  document.getElementById('lc-pts').textContent=pts.toLocaleString('fr-FR');
+  document.getElementById('lc-name').textContent=c.name;
+  const next=tier==='Silver'?{label:'Gold',min:0,max:1000}:tier==='Gold'?{label:'Platinum',min:1000,max:5000}:null;
+  if(next){
+    document.getElementById('prog-title').textContent=`Progression vers ${next.label}`;
+    const pct=Math.min(100,Math.max(2,Math.round((pts-next.min)/(next.max-next.min)*100)));
+    document.getElementById('prog-fill').style.width=pct+'%';
+    document.getElementById('prog-next').textContent=`${(next.max-pts).toLocaleString('fr-FR')} pts manquants`;
+    document.getElementById('prog-from').textContent=tier;document.getElementById('prog-to').textContent=next.label;
+  }else{
+    document.getElementById('prog-title').textContent='Niveau maximum atteint';
+    document.getElementById('prog-fill').style.width='100%';
+    document.getElementById('prog-next').textContent='Félicitations !';
+    document.getElementById('prog-from').textContent='Platinum';document.getElementById('prog-to').textContent='';
+  }
+  document.getElementById('s-visits').textContent=c.visits||0;
+  document.getElementById('s-pts').textContent=pts.toLocaleString('fr-FR');
+  document.getElementById('s-value').textContent=(pts/100).toFixed(2)+'€';
+}
+
+async function renderRewards(){
+  const c=clientData;if(!c)return;
+  const pts=c.points||0;
+  const{data:rw}=await sb.from('rewards').select('*').eq('merchant_id',c.merchant_id).eq('active',true);
+  if(!(rw||[]).length){document.getElementById('rw-grid').innerHTML='<div class="empty" style="grid-column:span 2"><div class="empty-icon">🎁</div><div class="empty-title">Aucune récompense disponible</div><div class="empty-sub">Votre commerçant n'a pas encore configuré de récompenses.</div></div>';return;}
+  document.getElementById('rw-grid').innerHTML=rw.map(r=>{
+    const canUse=pts>=r.points&&(!r.tier_required||tierVal(r.tier_required)<=tierVal(c.tier||'Silver'));
+    return`<div class="rwcard${canUse?'':' locked'}" onclick="${canUse?`useReward('${r.id}',${r.points},'${r.name}')`:''}" ><div class="rwe">${r.emoji||'🎁'}</div><div class="rwn">${r.name}</div><div class="rwp">${r.points.toLocaleString('fr-FR')} pts</div>${!canUse?`<div class="rwu">${pts<r.points?`Il vous manque ${(r.points-pts).toLocaleString('fr-FR')} pts`:r.tier_required+' requis'}</div>`:'<div style="font-size:10px;color:var(--green);margin-top:4px">Disponible !</div>'}</div>`;
+  }).join('');
+}
+function tierVal(t){return{Silver:1,Gold:2,Platinum:3}[t]||1;}
+async function useReward(rid,pts,name){
+  if(!confirm(`Utiliser "${name}" pour ${pts} pts ?`))return;
+  const c=clientData;if(!c||c.points<pts){toast('Points insuffisants','err');return;}
+  const newPts=c.points-pts;const newTier=newPts>=5000?'Platinum':newPts>=1000?'Gold':'Silver';
+  await sb.from('clients').update({points:newPts,tier:newTier}).eq('id',cid);
+  await sb.from('transactions').insert({client_id:cid,merchant_id:c.merchant_id,type:'redeem',points:pts,description:`Récompense : ${name}`});
+  await sb.from('rewards').update({usage_count:pts}).eq('id',rid);
+  toast(`"${name}" utilisée ! −${pts} pts`,'ok');
+  await loginAs(cid);
+}
+
+async function renderHistory(){
+  const{data:txns}=await sb.from('transactions').select('*').eq('client_id',cid).order('created_at',{ascending:false});
+  const el=document.getElementById('hist-list');
+  if(!(txns||[]).length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Aucune transaction</div><div class="empty-sub">Vos achats et récompenses apparaîtront ici.</div></div>';return;}
+  el.innerHTML=txns.map(t=>`<div class="hrow"><div class="hic ${t.type==='earn'?'hearn':'hredeem'}">${t.type==='earn'?'+':'−'}</div><div class="hinfo"><div class="hdesc">${t.description||'Transaction'}</div><div class="hdate">${fmtDate(t.created_at)}</div></div><div class="hpts" style="color:${t.type==='earn'?'var(--green)':'var(--red)'}">${t.type==='earn'?'+':'−'}${t.points} pts</div></div>`).join('');
+}
+
+async function renderNotifs(){
+  const c=clientData;if(!c)return;
+  const{data:notifs}=await sb.from('notifications').select('*').eq('merchant_id',c.merchant_id).order('sent_at',{ascending:false});
+  const el=document.getElementById('notifs-list');
+  if(!(notifs||[]).length){el.innerHTML='<div class="empty"><div class="empty-icon">🔔</div><div class="empty-title">Aucune notification</div><div class="empty-sub">Les offres et actualités de votre commerçant apparaîtront ici.</div></div>';return;}
+  el.innerHTML=notifs.map((n,i)=>`<div class="ncard"><div style="width:6px;height:6px;border-radius:50%;background:${i<2?'var(--accent)':'transparent'};margin-top:6px;flex-shrink:0"></div><div class="nicon">📣</div><div style="flex:1;min-width:0"><div class="ntitle">${n.title}</div><div class="nbody">${n.body}</div><div class="ndate">${fmtDate(n.sent_at)}</div></div></div>`).join('');
+}
+
+function renderProfile(){
+  const c=clientData;if(!c)return;
+  const init=c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('pav').textContent=init;
+  document.getElementById('p-fullname').textContent=c.name;
+  document.getElementById('p-tier').textContent=`★ ${c.tier}`;
+  document.getElementById('p-since').textContent='Membre depuis '+fmtDate(c.join_date);
+  document.getElementById('edit-name').value=c.name;
+  document.getElementById('edit-email').value=c.email||'';
+  document.getElementById('edit-phone').value=c.phone||'';
+  const ws=(c.wallet||[]).length?`Wallets installés : ${(c.wallet||[]).join(', ')}`:'Aucun wallet installé.';
+  document.getElementById('wallet-status').textContent=ws;
+}
+async function saveProfile(){
+  const name=document.getElementById('edit-name').value.trim();
+  if(!name){toast('Nom obligatoire','err');return;}
+  const obj={name,email:document.getElementById('edit-email').value.trim(),phone:document.getElementById('edit-phone').value.trim()};
+  const np=document.getElementById('edit-pass').value;if(np)obj.pass=np;
+  await sb.from('clients').update(obj).eq('id',cid);
+  document.getElementById('top-name').textContent=name.split(' ')[0];
+  await loginAs(cid);toast('Profil mis à jour','ok');
+}
+async function addToWallet(type){
+  const c=clientData;if(!c)return;
+  const wallet=[...(c.wallet||[])];
+  if(!wallet.includes(type))wallet.push(type);
+  await sb.from('clients').update({wallet}).eq('id',cid);
+  clientData={...clientData,wallet};
+  renderProfile();renderCard();
+  const names={apple:'Apple Wallet',samsung:'Samsung Wallet',google:'Google Wallet'};
+  toast(`Carte ajoutée à ${names[type]} !`,'ok');
+}
+
+function sw(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.bni').forEach((b,i)=>b.classList.toggle('on',['home','rewards','history','notifs','profile'][i]===id));
+  document.getElementById('p-'+id)?.classList.add('on');
+  if(id==='home')renderCard();
+  if(id==='rewards')renderRewards();
+  if(id==='history')renderHistory();
+  if(id==='notifs')renderNotifs();
+  if(id==='profile')renderProfile();
+}
+function fmtDate(iso){if(!iso)return'—';const d=new Date(iso),now=new Date(),diff=Math.floor((now-d)/86400000);if(diff===0)return"Aujourd'hui";if(diff===1)return'Hier';return d.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});}
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast on'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2800);}
+
+(async()=>{
+  const sess=sessionStorage.getItem('los_client_sess');
+  if(sess){
+    const{data:c}=await sb.from('clients').select('*').eq('id',sess).single();
+    if(c)loginAs(c.id);
+    else sessionStorage.removeItem('los_client_sess');
+  }
+})();
+</script>
+</body>
+</html>
