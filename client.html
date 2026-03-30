@@ -300,10 +300,32 @@ html,body{min-height:100%;font-family:'Inter',sans-serif;color:var(--txt);backgr
 <div class="toast" id="toast"></div>
 
 <script>
-const SB_URL='https://qqcfmbpixdeiczobqnqa.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY2ZtYnBpeGRlaWN6b2JxbnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjMxMDMsImV4cCI6MjA5MDM5OTEwM30.qTQvfalYS-V39M37BJdMQbXeMJBJTuzM44RMzoqmW5I';
-const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const SB_URL = 'https://TON_PROJET.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY2ZtYnBpeGRlaWN6b2JxbnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjMxMDMsImV4cCI6MjA5MDM5OTEwM30.qTQvfalYS-V39M37BJdMQbXeMJBJTuzM44RMzoqmW5I';
+const sb = supabase.createClient(SB_URL, SB_KEY);
 
+async function login() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+    
+    // On cherche le client
+    const { data, error } = await sb.from('clients')
+        .select('*, merchants(shop_name, card_color)')
+        .eq('email', email)
+        .eq('pass', pass)
+        .single();
+
+    if (error || !data) {
+        alert("Email ou mot de passe incorrect. Vérifiez votre base Supabase !");
+        return;
+    }
+    
+    // Si OK, on affiche le dashboard
+    clientData = data;
+    sessionStorage.setItem('los_client_sess', JSON.stringify(data));
+    document.getElementById('auth-screen').classList.add('h');
+    sw('home');
+}
 let cid=null,clientData=null;
 
 function am(mode){
