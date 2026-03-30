@@ -220,7 +220,7 @@ select.finp option{background:var(--bg3)}
 <div class="toast" id="toast"></div>
 <script>
 const SB_URL='https://qqcfmbpixdeiczobqnqa.supabase.co';
-const SB_KEY='sb_publishable_0OsZK_JGmbjWz8SAr05mwA_E1H0WRlF';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxY2ZtYnBpeGRlaWN6b2JxbnFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjMxMDMsImV4cCI6MjA5MDM5OTEwM30.qTQvfalYS-V39M37BJdMQbXeMJBJTuzM44RMzoqmW5I';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 let allMerchants=[],allClients=[],allTxns=[];
@@ -431,7 +431,7 @@ function impersonate(id){
   const m=allMerchants.find(x=>x.id===id);if(!m)return;
   sessionStorage.setItem('los_merchant_sess',JSON.stringify({id,shopName:m.shop_name,email:m.email}));
   addLog('info',`Admin a accédé au compte "${m.shop_name}"`);
-  window.open('merchant.html','_blank');
+  window.open(type === 'merchant' ? 'merchant.html' : 'client.html', '_blank');
 }
 
 async function showClientDetail(id){
